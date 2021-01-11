@@ -565,15 +565,15 @@ func (cr *streamReader) dial(t streamType) (io.ReadCloser, error) {
 	u := cr.picker.pick()
 	uu := u
 	uu.Path = path.Join(t.endpoint(cr.lg), cr.tr.ID.String())
-
-	if cr.lg != nil {
-		cr.lg.Debug(
-			"dial stream reader",
-			zap.String("from", cr.tr.ID.String()),
-			zap.String("to", cr.peerID.String()),
-			zap.String("address", uu.String()),
-		)
-	}
+	//
+	//if cr.lg != nil {
+	//	cr.lg.Debug(
+	//		"dial stream reader",
+	//		zap.String("from", cr.tr.ID.String()),
+	//		zap.String("to", cr.peerID.String()),
+	//		zap.String("address", uu.String()),
+	//	)
+	//}
 	req, err := http.NewRequest("GET", uu.String(), nil)
 	if err != nil {
 		cr.picker.unreachable(u)
