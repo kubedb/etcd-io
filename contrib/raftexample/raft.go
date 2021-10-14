@@ -300,9 +300,9 @@ func (rc *raftNode) startRaft() {
 	}
 
 	if oldwal || rc.join {
-		rc.node = raft.RestartNode(c)
+		rc.node = raft.RestartNode(c, []string{})
 	} else {
-		rc.node = raft.StartNode(c, rpeers)
+		rc.node = raft.StartNode(c, rpeers, []string{})
 	}
 
 	rc.transport = &rafthttp.Transport{

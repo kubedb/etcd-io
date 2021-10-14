@@ -313,9 +313,12 @@ type raft struct {
 	// current term. Those will be handled as fast as first log is committed in
 	// current term.
 	pendingReadIndexMessages []pb.Message
+
+	// keyList is the list of keys that we are going to update in case of log corruption
+	keyList []string
 }
 
-func newRaft(c *Config) *raft {
+func newRaft(c *Config, keyList []string) *raft {
 	if err := c.validate(); err != nil {
 		panic(err.Error())
 	}
@@ -340,6 +343,7 @@ func newRaft(c *Config) *raft {
 		preVote:                   c.PreVote,
 		readOnly:                  newReadOnly(c.ReadOnlyOption),
 		disableProposalForwarding: c.DisableProposalForwarding,
+		keyList:                   keyList,
 	}
 
 	cfg, prs, err := confchange.Restore(confchange.Changer{
@@ -1505,6 +1509,30 @@ func (r *raft) handleAppendEntries(m pb.Message) {
 }
 
 func (r *raft) handleHeartbeat(m pb.Message) {
+	defer func() {
+		e := recover()
+		if e != nil {
+			defer func() {
+				e := recover()
+				if e != nil {
+					return
+				}
+				r.logger.Infof("log has been corrupted. Trying to update key value pairs")
+				for _, key := range r.keyList {
+					value, err := GetValueForCoordinator(key)
+					if err != nil {
+						return
+					}
+					err = SetValueForCoordinator(key, value)
+					if err != nil {
+						return
+					}
+				}
+				r.logger.Infof("updated key value pairs")
+			}()
+			return
+		}
+	}()
 	r.raftLog.commitTo(m.Commit)
 	r.send(pb.Message{To: m.From, Type: pb.MsgHeartbeatResp, Context: m.Context})
 }

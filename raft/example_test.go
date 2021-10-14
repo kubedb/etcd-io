@@ -25,7 +25,7 @@ func saveToDisk(ents []pb.Entry)      {}
 
 func ExampleNode() {
 	c := &Config{}
-	n := StartNode(c, nil)
+	n := StartNode(c, nil, []string{})
 	defer n.Stop()
 
 	// stuff to n happens in other goroutines

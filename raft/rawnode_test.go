@@ -88,7 +88,7 @@ func TestRawNodeStep(t *testing.T) {
 			}
 			// Append an empty entry to make sure the non-local messages (like
 			// vote requests) are ignored and don't trigger assertions.
-			rawNode, err := NewRawNode(newTestConfig(1, 10, 1, s))
+			rawNode, err := NewRawNode(newTestConfig(1, 10, 1, s), []string{})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -224,7 +224,7 @@ func TestRawNodeProposeAndConfChange(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run("", func(t *testing.T) {
 			s := newTestMemoryStorage(withPeers(1))
-			rawNode, err := NewRawNode(newTestConfig(1, 10, 1, s))
+			rawNode, err := NewRawNode(newTestConfig(1, 10, 1, s), []string{})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -390,7 +390,7 @@ func TestRawNodeJointAutoLeave(t *testing.T) {
 
 	t.Run("", func(t *testing.T) {
 		s := newTestMemoryStorage(withPeers(1))
-		rawNode, err := NewRawNode(newTestConfig(1, 10, 1, s))
+		rawNode, err := NewRawNode(newTestConfig(1, 10, 1, s), []string{})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -510,7 +510,7 @@ func TestRawNodeJointAutoLeave(t *testing.T) {
 // not affect the later propose to add new node.
 func TestRawNodeProposeAddDuplicateNode(t *testing.T) {
 	s := newTestMemoryStorage(withPeers(1))
-	rawNode, err := NewRawNode(newTestConfig(1, 10, 1, s))
+	rawNode, err := NewRawNode(newTestConfig(1, 10, 1, s), []string{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -594,7 +594,7 @@ func TestRawNodeReadIndex(t *testing.T) {
 
 	s := newTestMemoryStorage(withPeers(1))
 	c := newTestConfig(1, 10, 1, s)
-	rawNode, err := NewRawNode(c)
+	rawNode, err := NewRawNode(c, []string{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -734,7 +734,7 @@ func TestRawNodeStart(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	rawNode, err := NewRawNode(newTestConfig(1, 10, 1, storage))
+	rawNode, err := NewRawNode(newTestConfig(1, 10, 1, storage), []string{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -778,7 +778,7 @@ func TestRawNodeRestart(t *testing.T) {
 	storage := newTestMemoryStorage(withPeers(1))
 	storage.SetHardState(st)
 	storage.Append(entries)
-	rawNode, err := NewRawNode(newTestConfig(1, 10, 1, storage))
+	rawNode, err := NewRawNode(newTestConfig(1, 10, 1, storage), []string{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -816,7 +816,7 @@ func TestRawNodeRestartFromSnapshot(t *testing.T) {
 	s.SetHardState(st)
 	s.ApplySnapshot(snap)
 	s.Append(entries)
-	rawNode, err := NewRawNode(newTestConfig(1, 10, 1, s))
+	rawNode, err := NewRawNode(newTestConfig(1, 10, 1, s), []string{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -835,7 +835,7 @@ func TestRawNodeRestartFromSnapshot(t *testing.T) {
 
 func TestRawNodeStatus(t *testing.T) {
 	s := newTestMemoryStorage(withPeers(1))
-	rn, err := NewRawNode(newTestConfig(1, 10, 1, s))
+	rn, err := NewRawNode(newTestConfig(1, 10, 1, s), []string{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -917,7 +917,7 @@ func TestRawNodeCommitPaginationAfterRestart(t *testing.T) {
 		Data:  []byte("boom"),
 	})
 
-	rawNode, err := NewRawNode(cfg)
+	rawNode, err := NewRawNode(cfg, []string{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -956,7 +956,7 @@ func TestRawNodeBoundedLogGrowthWithPartition(t *testing.T) {
 	s := newTestMemoryStorage(withPeers(1))
 	cfg := newTestConfig(1, 10, 1, s)
 	cfg.MaxUncommittedEntriesSize = maxEntrySize
-	rawNode, err := NewRawNode(cfg)
+	rawNode, err := NewRawNode(cfg, []string{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -1012,7 +1012,7 @@ func BenchmarkStatus(b *testing.B) {
 		}
 		cfg := newTestConfig(1, 3, 1, newTestMemoryStorage(withPeers(peers...)))
 		cfg.Logger = discardLogger
-		r := newRaft(cfg)
+		r := newRaft(cfg, []string{})
 		r.becomeFollower(1, 1)
 		r.becomeCandidate()
 		r.becomeLeader()
