@@ -62,9 +62,9 @@ To restart a node from previous state:
 	  MaxInflightMsgs: 256,
 	}
 
-	// restart raft without peer information.
-	// peer information is already included in the storage.
-	n := raft.RestartNode(c)
+  // restart raft without peer information.
+  // peer information is already included in the storage.
+  n := raft.RestartNode(c, []string{})
 
 Now that you are holding onto a Node you have a few responsibilities:
 

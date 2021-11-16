@@ -50,7 +50,7 @@ func startNode(id uint64, peers []raft.Peer, iface iface) *node {
 		MaxInflightMsgs:           256,
 		MaxUncommittedEntriesSize: 1 << 30,
 	}
-	rn := raft.StartNode(c, peers)
+	rn := raft.StartNode(c, peers, []string{})
 	n := &node{
 		Node:    rn,
 		id:      id,
@@ -140,7 +140,7 @@ func (n *node) restart() {
 		MaxInflightMsgs:           256,
 		MaxUncommittedEntriesSize: 1 << 30,
 	}
-	n.Node = raft.RestartNode(c)
+	n.Node = raft.RestartNode(c, []string{})
 	n.start()
 	n.iface.connect()
 }

@@ -117,7 +117,7 @@ func (env *InteractionEnv) AddNodes(n int, snap pb.Snapshot) error {
 		}
 		cfg.Logger = env.Output
 
-		rn, err := raft.NewRawNode(cfg)
+		rn, err := raft.NewRawNode(cfg, []string{})
 		if err != nil {
 			return err
 		}

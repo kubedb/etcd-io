@@ -16,9 +16,8 @@ package raft
 
 import (
 	"fmt"
-	"log"
-
 	pb "go.etcd.io/etcd/raft/v3/raftpb"
+	"log"
 )
 
 type raftLog struct {
