@@ -64,7 +64,7 @@ To restart a node from previous state:
 
   // restart raft without peer information.
   // peer information is already included in the storage.
-  n := raft.RestartNode(c)
+  n := raft.RestartNode(c, []string{})
 
 Now that you are holding onto a Node you have a few responsibilities:
 
