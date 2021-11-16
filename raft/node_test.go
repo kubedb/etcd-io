@@ -219,7 +219,7 @@ func TestDisableProposalForwarding(t *testing.T) {
 	r2 := newTestRaft(2, 10, 1, newTestMemoryStorage(withPeers(1, 2, 3)))
 	cfg3 := newTestConfig(3, 10, 1, newTestMemoryStorage(withPeers(1, 2, 3)))
 	cfg3.DisableProposalForwarding = true
-	r3 := newRaft(cfg3)
+	r3 := newRaft(cfg3, []string{})
 	nt := newNetwork(r1, r2, r3)
 
 	// elect r1 as leader
@@ -615,7 +615,7 @@ func TestNodeStart(t *testing.T) {
 		MaxSizePerMsg:   noLimit,
 		MaxInflightMsgs: 256,
 	}
-	n := StartNode(c, []Peer{{ID: 1}})
+	n := StartNode(c, []Peer{{ID: 1}}, []string{})
 	defer n.Stop()
 	g := <-n.Ready()
 	if !reflect.DeepEqual(g, wants[0]) {
@@ -674,7 +674,7 @@ func TestNodeRestart(t *testing.T) {
 		MaxSizePerMsg:   noLimit,
 		MaxInflightMsgs: 256,
 	}
-	n := RestartNode(c)
+	n := RestartNode(c, []string{})
 	defer n.Stop()
 	if g := <-n.Ready(); !reflect.DeepEqual(g, want) {
 		t.Errorf("g = %+v,\n             w   %+v", g, want)
@@ -724,7 +724,7 @@ func TestNodeRestartFromSnapshot(t *testing.T) {
 		MaxSizePerMsg:   noLimit,
 		MaxInflightMsgs: 256,
 	}
-	n := RestartNode(c)
+	n := RestartNode(c, []string{})
 	defer n.Stop()
 	if g := <-n.Ready(); !reflect.DeepEqual(g, want) {
 		t.Errorf("g = %+v,\n             w   %+v", g, want)
@@ -752,7 +752,7 @@ func TestNodeAdvance(t *testing.T) {
 		MaxSizePerMsg:   noLimit,
 		MaxInflightMsgs: 256,
 	}
-	n := StartNode(c, []Peer{{ID: 1}})
+	n := StartNode(c, []Peer{{ID: 1}}, []string{})
 	defer n.Stop()
 	rd := <-n.Ready()
 	storage.Append(rd.Entries)
@@ -910,7 +910,7 @@ func TestCommitPagination(t *testing.T) {
 	s := newTestMemoryStorage(withPeers(1))
 	cfg := newTestConfig(1, 10, 1, s)
 	cfg.MaxCommittedSizePerReady = 2048
-	rn, err := NewRawNode(cfg)
+	rn, err := NewRawNode(cfg, []string{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -1002,7 +1002,7 @@ func TestNodeCommitPaginationAfterRestart(t *testing.T) {
 	// this and *will* return it (which is how the Commit index ended up being 10 initially).
 	cfg.MaxSizePerMsg = size - uint64(s.ents[len(s.ents)-1].Size()) - 1
 
-	rn, err := NewRawNode(cfg)
+	rn, err := NewRawNode(cfg, []string{})
 	if err != nil {
 		t.Fatal(err)
 	}

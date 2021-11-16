@@ -463,9 +463,9 @@ func startNode(cfg config.ServerConfig, cl *membership.RaftCluster, ids []types.
 		Logger:          NewRaftLoggerZap(cfg.Logger.Named("raft")),
 	}
 	if len(peers) == 0 {
-		n = raft.RestartNode(c)
+		n = raft.RestartNode(c, []string{})
 	} else {
-		n = raft.StartNode(c, peers)
+		n = raft.StartNode(c, peers, []string{})
 	}
 	raftStatusMu.Lock()
 	raftStatus = n.Status
@@ -506,7 +506,7 @@ func restartNode(cfg config.ServerConfig, snapshot *raftpb.Snapshot) (types.ID, 
 		Logger:          NewRaftLoggerZap(cfg.Logger.Named("raft")),
 	}
 
-	n := raft.RestartNode(c)
+	n := raft.RestartNode(c, []string{})
 	raftStatusMu.Lock()
 	raftStatus = n.Status
 	raftStatusMu.Unlock()
@@ -580,7 +580,7 @@ func restartAsStandaloneNode(cfg config.ServerConfig, snapshot *raftpb.Snapshot)
 		Logger:          NewRaftLoggerZap(cfg.Logger.Named("raft")),
 	}
 
-	n := raft.RestartNode(c)
+	n := raft.RestartNode(c, []string{})
 	raftStatus = n.Status
 	return id, cl, n, s, w
 }

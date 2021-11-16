@@ -112,7 +112,7 @@ func TestProgressFlowControl(t *testing.T) {
 	cfg := newTestConfig(1, 5, 1, newTestMemoryStorage(withPeers(1, 2)))
 	cfg.MaxInflightMsgs = 3
 	cfg.MaxSizePerMsg = 2048
-	r := newRaft(cfg)
+	r := newRaft(cfg, []string{})
 	r.becomeCandidate()
 	r.becomeLeader()
 
@@ -193,7 +193,7 @@ func TestUncommittedEntryLimit(t *testing.T) {
 	cfg := newTestConfig(1, 5, 1, newTestMemoryStorage(withPeers(1, 2, 3)))
 	cfg.MaxUncommittedEntriesSize = uint64(maxEntrySize)
 	cfg.MaxInflightMsgs = 2 * 1024 // avoid interference
-	r := newRaft(cfg)
+	r := newRaft(cfg, []string{})
 	r.becomeCandidate()
 	r.becomeLeader()
 	if n := r.uncommittedSize; n != 0 {
@@ -863,9 +863,9 @@ func TestDuelingPreCandidates(t *testing.T) {
 	cfgA.PreVote = true
 	cfgB.PreVote = true
 	cfgC.PreVote = true
-	a := newRaft(cfgA)
-	b := newRaft(cfgB)
-	c := newRaft(cfgC)
+	a := newRaft(cfgA, []string{})
+	b := newRaft(cfgB, []string{})
+	c := newRaft(cfgC, []string{})
 
 	nt := newNetwork(a, b, c)
 	nt.cut(1, 3)
@@ -2359,7 +2359,7 @@ func TestReadOnlyForNewLeader(t *testing.T) {
 		}
 		cfg := newTestConfig(c.id, 10, 1, storage)
 		cfg.Applied = c.applied
-		raft := newRaft(cfg)
+		raft := newRaft(cfg, []string{})
 		peers = append(peers, raft)
 	}
 	nt := newNetwork(peers...)
@@ -3345,7 +3345,7 @@ func TestPreCampaignWhileLeader(t *testing.T) {
 func testCampaignWhileLeader(t *testing.T, preVote bool) {
 	cfg := newTestConfig(1, 5, 1, newTestMemoryStorage(withPeers(1)))
 	cfg.PreVote = preVote
-	r := newRaft(cfg)
+	r := newRaft(cfg, []string{})
 	if r.state != StateFollower {
 		t.Errorf("expected new node to be follower but got %s", r.state)
 	}
@@ -4610,7 +4610,7 @@ func entsWithConfig(configFunc func(*Config), terms ...uint64) *raft {
 	if configFunc != nil {
 		configFunc(cfg)
 	}
-	sm := newRaft(cfg)
+	sm := newRaft(cfg, []string{})
 	sm.reset(terms[len(terms)-1])
 	return sm
 }
@@ -4625,7 +4625,7 @@ func votedWithConfig(configFunc func(*Config), vote, term uint64) *raft {
 	if configFunc != nil {
 		configFunc(cfg)
 	}
-	sm := newRaft(cfg)
+	sm := newRaft(cfg, []string{})
 	sm.reset(term)
 	return sm
 }
@@ -4667,7 +4667,7 @@ func newNetworkWithConfig(configFunc func(*Config), peers ...stateMachine) *netw
 			if configFunc != nil {
 				configFunc(cfg)
 			}
-			sm := newRaft(cfg)
+			sm := newRaft(cfg, []string{})
 			npeers[id] = sm
 		case *raft:
 			// TODO(tbg): this is all pretty confused. Clean this up.
@@ -4833,19 +4833,19 @@ func newTestMemoryStorage(opts ...testMemoryStorageOptions) *MemoryStorage {
 }
 
 func newTestRaft(id uint64, election, heartbeat int, storage Storage) *raft {
-	return newRaft(newTestConfig(id, election, heartbeat, storage))
+	return newRaft(newTestConfig(id, election, heartbeat, storage), []string{})
 }
 
 func newTestLearnerRaft(id uint64, election, heartbeat int, storage Storage) *raft {
 	cfg := newTestConfig(id, election, heartbeat, storage)
-	return newRaft(cfg)
+	return newRaft(cfg, []string{})
 }
 
 // newTestRawNode sets up a RawNode with the given peers. The configuration will
 // not be reflected in the Storage.
 func newTestRawNode(id uint64, election, heartbeat int, storage Storage) *RawNode {
 	cfg := newTestConfig(id, election, heartbeat, storage)
-	rn, err := NewRawNode(cfg)
+	rn, err := NewRawNode(cfg, []string{})
 	if err != nil {
 		panic(err)
 	}

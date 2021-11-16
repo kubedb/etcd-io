@@ -215,11 +215,11 @@ type Peer struct {
 // It appends a ConfChangeAddNode entry for each given peer to the initial log.
 //
 // Peers must not be zero length; call RestartNode in that case.
-func StartNode(c *Config, peers []Peer) Node {
+func StartNode(c *Config, peers []Peer, keyList []string) Node {
 	if len(peers) == 0 {
 		panic("no peers given; use RestartNode instead")
 	}
-	rn, err := NewRawNode(c)
+	rn, err := NewRawNode(c, keyList)
 	if err != nil {
 		panic(err)
 	}
@@ -235,8 +235,8 @@ func StartNode(c *Config, peers []Peer) Node {
 // The current membership of the cluster will be restored from the Storage.
 // If the caller has an existing state machine, pass in the last log index that
 // has been applied to it; otherwise use zero.
-func RestartNode(c *Config) Node {
-	rn, err := NewRawNode(c)
+func RestartNode(c *Config, keyList []string) Node {
+	rn, err := NewRawNode(c, keyList)
 	if err != nil {
 		panic(err)
 	}
