@@ -538,9 +538,9 @@ func raftConfig(cfg config.ServerConfig, id uint64, s *raft.MemoryStorage) *raft
 func (b *bootstrappedRaft) newRaftNode(ss *snap.Snapshotter, wal *wal.WAL, cl *membership.RaftCluster) *raftNode {
 	var n raft.Node
 	if len(b.peers) == 0 {
-		n = raft.RestartNode(b.config)
+		n = raft.RestartNode(b.config, []string{})
 	} else {
-		n = raft.StartNode(b.config, b.peers)
+		n = raft.StartNode(b.config, b.peers, []string{})
 	}
 	raftStatusMu.Lock()
 	raftStatus = n.Status

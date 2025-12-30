@@ -106,3 +106,5 @@ require (
 	sigs.k8s.io/json v0.0.0-20211020170558-c049b76a60c6 // indirect
 	sigs.k8s.io/yaml v1.4.0 // indirect
 )
+replace go.etcd.io/raft/v3 => github.com/kubedb/raft/v3 v3.6.0-beta.0.0.20251230054441-2a0ba1e4752c
+

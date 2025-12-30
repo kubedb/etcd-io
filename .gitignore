@@ -16,9 +16,9 @@ hack/tls-setup/certs
 .idea
 *.iml
 /contrib/mixin/manifests
-/contrib/raftexample/raftexample
+contrib/raftexample/raftexample
 /contrib/raftexample/raftexample-*
-/vendor
+
 /tests/e2e/default.proxy
 *.tmp
 *.bak

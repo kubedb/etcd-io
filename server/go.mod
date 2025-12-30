@@ -90,3 +90,5 @@ replace (
 replace go.etcd.io/etcd => ./FORBIDDEN_DEPENDENCY
 
 replace go.etcd.io/tests/v3 => ./FORBIDDEN_DEPENDENCY
+
+replace go.etcd.io/raft/v3 => github.com/kubedb/raft/v3 v3.6.0-beta.0.0.20251230054441-2a0ba1e4752c
